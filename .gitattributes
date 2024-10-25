@@ -1,4 +1,2 @@
-hw01.pptx filter=lfs diff=lfs merge=lfs -text
-hw02.pptx filter=lfs diff=lfs merge=lfs -text
-hw03.pptx filter=lfs diff=lfs merge=lfs -text
 hw04.pptx filter=lfs diff=lfs merge=lfs -text
+Storyboard.docx filter=lfs diff=lfs merge=lfs -text
