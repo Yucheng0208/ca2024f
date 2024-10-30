@@ -25,6 +25,7 @@
 
 
   body {
+    cursor: none;
     background-color: rgb(106, 76, 156); /* #6A4C9C */
     color: rgb(106, 76, 156);
     font-family: 'CircleFont', 'Noto Serif JP', serif;
@@ -149,6 +150,7 @@
     animation: none;
     text-decoration: underline;
     padding:2px 0;
+    
   }
   @keyframes waveMove {
     from { background-position:0 100%; }
@@ -211,6 +213,50 @@
   {
       left:53%;
       content: "完成";
+  }
+  /* 軌跡粒子的樣式 */
+  .sparkle
+  {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: fadeOut 0.6s ease-out forwards;
+  }
+
+  /* 火花粒子的樣式 */
+  .spark {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: sparkFadeOut 1s ease-out forwards;
+  }
+
+  /* 粒子淡出效果 */
+  @keyframes fadeOut {
+    from {
+    opacity: 1;
+    transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(1.5);
+        }
+  }
+
+  /* 火花四散效果 */
+  @keyframes sparkFadeOut {
+      from {
+      opacity: 1;
+      transform: translate(0, 0) scale(1);
+      }
+      to {
+        opacity: 0;
+        transform: translate(var(--x-move), var(--y-move)) scale(0.5);
+        }
   }
 </style>
 
@@ -481,7 +527,66 @@
       }
       d3.select("#myTotal").html(scoreTotal);
     }
+    let sparkleColor = getRandomColor();
+    let colorTimeout;
+    let sparkInterval;
 
+    document.addEventListener("mousemove", function (e) {
+    // 創建軌跡粒子
+    const sparkle = document.createElement("div");
+    sparkle.classList.add("sparkle");
+    sparkle.style.backgroundColor = sparkleColor;
+    sparkle.style.left = `${e.pageX}px`;
+    sparkle.style.top = `${e.pageY}px`;
+    document.body.appendChild(sparkle);
+
+    // 延遲後移除粒子
+    setTimeout(() => sparkle.remove(), 600);
+
+    // 移動時重設顏色計時器和火花生成計時器
+    clearTimeout(colorTimeout);
+    clearInterval(sparkInterval);
+
+    // 滑鼠停止 200 毫秒後隨機變顏色
+    colorTimeout = setTimeout(() => {
+    sparkleColor = getRandomColor();
+    }, 200);
+
+    // 停止 500 毫秒後生成火花效果
+    sparkInterval = setTimeout(() => generateSparks(e.pageX, e.pageY), 500);
+    });
+
+    // 隨機顏色生成
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    // 生成火花效果
+    function generateSparks(x, y) {
+      for (let i = 0; i < 5; i++) {
+        const spark = document.createElement("div");
+        spark.classList.add("spark");
+        spark.style.backgroundColor = getRandomColor();
+        spark.style.left = `${x}px`;
+        spark.style.top = `${y}px`;
+
+        // 隨機方向
+        const angle = Math.random() * 2 * Math.PI;
+        const distance = Math.random() * 15 + 5; // 控制火花散開範圍
+        spark.style.setProperty('--x-move', `${Math.cos(angle) * distance}px`);
+        spark.style.setProperty('--y-move', `${Math.sin(angle) * distance}px`);
+
+        document.body.appendChild(spark);
+
+          // 延遲後移除火花
+          setTimeout(() => spark.remove(), 1000);
+        }
+    }
   </script>
   <!-- ------------------------------------------------>
 
